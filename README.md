@@ -1,6 +1,6 @@
 calendar
 ========
-php jquery msyql 练习 复习
+php jquery msyql 练习复习
 
 
 2014/1/14 
