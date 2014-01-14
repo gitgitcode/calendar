@@ -186,7 +186,7 @@ class Calendar extends DB_Connect{
 		for($d=0,$labels=null;$d<7;++$d){
 			$labels .= "\n\t\t<li>".$weekdays[$d]."</li>";	
 		}
-		$html .="\n\t<ul calss=\"weekdays\">".$labels."\n\t</ul>";
+		$html .="\n\t<ul class=\"weekdays\">".$labels."\n\t</ul>";
 		
 		//-------------
 		/**
@@ -205,14 +205,16 @@ class Calendar extends DB_Connect{
 				//echo $i;
 		//--3-5--
 		/**
-		 *为起始日之前的几天添加calss fill
+		 *为起始日之前的几天添加class fill
 		 */	
 			$class = $i<= $this->_startDay?"fill":null;
 			/**
 			 *如果当前处理日期是今天，则为它添加class today
 			 */
-
-			if($c+1==$t && $m==$this->_m && $y==$this->_y){
+			/*echo $t.'<br/>';
+			echo '<hr/>';
+			echo $c."--<br/>";*/
+			if($c==$t && $m==$this->_m && $y==$this->_y){
 				$class ="today";
 			}
 			/**
@@ -253,9 +255,9 @@ class Calendar extends DB_Connect{
 			 *将上面的组装成一个
 			 */
 			$html.= $ls.$date.$event_info.$le.$wrap;
-			 echo $c.'<br/>';
+			 //echo $c.'<br/>';
 			}
- 
+
 		/**
 		 *为最后一周的几天添加填充项
 		 */
@@ -272,12 +274,84 @@ class Calendar extends DB_Connect{
 		 */
 		return $html;
 	}	
+	
+	/**
+	 *p 131 生成标记
+	 * 得到活动信息HTML
+	 * @param int $id活动ID
+	 * @return string 用于显示活动信息的基本HTML标记
+	 *
+	 */
+	public function displayEvent($id)
+	{
+		/**
+		 *确保传入有效ID
+		 */
+		if(empty($id)){return NULL;}
+		/**
+		 *确保ID是整数
+		 */
+		$id = preg_replace('/[^0-9]/','',$id);
+		/**
+		 *从数据库中载入活动数据
+		 */
+		$event =$this->_loadEventById($id);
+
+		/**
+		 *为$date,$start,$end 变量生成相应的字符串
+		 */
+		$ts = strtotime($event->start);
+		$date = date('F d,Y',$ts);
+		$start = date('g:ia',$ts);
+		$end = date('g:ia',strtotime($event->end));
+
+		/**
+		 *生成并返回HTML标记
+		 */
+		return "<h2>$event->title</h2>".
+				"\n\t<p class=\"dates\">$date,$start&mdash;$end</p>".
+				"\n\t<p>$event->description</p>";
+	}
 
 
+	/**
+	 *根据活动ID得到event对象
+	 * p130 整理活动数据
+	 * @param init $id 活动ID
+	 * @return object 活动对象
+	 */
+
+	private function _loadEventById($id)
+	{
+
+			/**
+			 *如果ID为空，返回NULL
+			 */
+			if(empty($id)){
+				return NULL;
+			}
+
+			/**
+			 *载入活动信息数组
+			 */
+			$event = $this->_loadEventData($id);
+
+			/**
+			 *返回event对象
+			 */
+			if(isset($event[0]))
+			{
+					return new Event($event[0]);
+			}else{
+					return null;
+			}
+	}
 
 	public 	function test(){
 	//	return	$this->_loadEventData();
-	return $this->_createEventObj();
+	//	return $this->_createEventObj();
+	//	return $this->_loadEventById(1);
+	//  return $this->displayEvent(1);
 	}
 }
 

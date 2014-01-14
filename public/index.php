@@ -37,6 +37,7 @@ include_once 'assets/common/header.inc.php';
  *生成并显示日历html
  */
 echo $cal->buildCalendar();
+//var_dump($cal->test());
 ?>
 </div><!--end #content-->
 <?php
