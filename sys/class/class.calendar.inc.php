@@ -315,6 +315,96 @@ class Calendar extends DB_Connect{
 
 
 	/**
+	 * 功能-检查传入id是否为整，
+	 * 声明一个空变量保存活动的描述信息
+	 * 传入数据有效则载入活动数据，
+	 * 若找到活动数据将他赋值给前面的声明变量
+	 * 输出表单标记
+	 * p136
+	 *生成一个修改或创建活动的表单
+	 */
+	public function displayForm()
+	{
+		/**
+		 *检查是否传入活动ID
+		 */
+		if(isset($_POST['event_id']))
+		{
+			$id = (int)$_POST['event_id'];//强制类型转换确保数据安全
+		}else{
+			$id = NULL;
+		}
+				//$id=1; //for test
+		/**
+		 *标题/提交按钮文本
+		 */
+		$submit = "Create a New Event";
+		/**
+		 *若传入活动ID则载入相应的数据
+		 */
+		if(!empty($id))
+		{
+			$event = $this->_loadEventById($id);
+			/**
+			 *若未找到响应的活动返回null
+			 */
+			if(!is_object($event)){return NULL;}
+
+			$submit = "Edit This Event";
+		
+		/**
+		 *生成标记
+		 */
+		return <<<FORM_MARKUP
+		<form action="assets/inc/process.inc.php" method="POST">
+			<fieldset>
+				<legend>{$submit}</legend>
+				<label for="event_title">Event Title</lable>
+				<input type="text" name="event_title" 
+						id="event_title" value="$event->title"/>
+				<label for="event_start">Start Time</lable>
+				<input type="text" name="event_start"
+						id="evetn_start" value="$event->start"/>
+				<lable for="event_end">End Time</lable>
+				<input type="text" name="event_end"
+						id="event_end" value="$event->end"/>
+				<lable for="event_description">Event Description</lable>
+				<textarea name="event_descript">$event->description</textarea>
+				<input type="hidden" name="event_id" value="$event->id" />
+				<input type="hidden" name="token" vlaue="$_SESSION[token]"/>				<input type="hidden" name="action" value="event_edit" />
+				<input type="submit" name="event_submit" value="$submit" />
+			or <a href="./">cancel</a>
+			</fieldset>
+		</from>
+FORM_MARKUP;
+		}else{
+		
+		return <<<FORM_MARKUP
+		<form action="assets/inc/process.inc.php" method="POST">
+			<fieldset>
+				<legend>{$submit}</legend>
+				<label for="event_title">Event Title</lable>
+				<input type="text" name="event_title" 
+						id="event_title" value=""/>
+				<label for="event_start">Start Time</lable>
+				<input type="text" name="event_start"
+						id="evetn_start" value=""/>
+				<lable for="event_end">End Time</lable>
+				<input type="text" name="event_end"
+						id="event_end" value=""/>
+				<lable for="event_description">Event Description</lable>
+				<textarea name="event_descript"></textarea>
+				<input type="hidden" name="event_id" value="" />
+				<input type="hidden" name="token" vlaue="$_SESSION[token]"/>				<input type="hidden" name="action" value="event_edit" />
+				<input type="submit" name="event_submit" value="" />
+			or <a href="./">cancel</a>
+			</fieldset>
+		</from>
+FORM_MARKUP;
+		}
+	}
+
+	/**
 	 *根据活动ID得到event对象
 	 * p130 整理活动数据
 	 * @param init $id 活动ID
@@ -352,6 +442,8 @@ class Calendar extends DB_Connect{
 	//	return $this->_createEventObj();
 	//	return $this->_loadEventById(1);
 	//  return $this->displayEvent(1);
+	//return $this->displayForm();	
+
 	}
 }
 

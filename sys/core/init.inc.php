@@ -1,5 +1,20 @@
 <?php
+/**
+ * p138
+ *启动session
+ */
 
+session_start();
+
+/**
+ *如果session没有防御跨站请求标记则生成一个
+ */
+if(!isset($_SESSION['token']))
+{
+	$_SESSION['token'] =sha1(uniqid(mt_rand(),True));
+}
+
+//var_dump($_SESSION);
 /**
  *包含必需的配置信息
  */
