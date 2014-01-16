@@ -365,10 +365,10 @@ class Calendar extends DB_Connect{
 				<label for="event_start">Start Time</lable>
 				<input type="text" name="event_start"
 						id="evetn_start" value="$event->start"/>
-				<lable for="event_end">End Time</lable>
+				<label for="event_end">End Time</lable>
 				<input type="text" name="event_end"
 						id="event_end" value="$event->end"/>
-				<lable for="event_description">Event Description</lable>
+				<label for="event_description">Event Description</lable>
 				<textarea name="event_descript">$event->description</textarea>
 				<input type="hidden" name="event_id" value="$event->id" />
 				<input type="hidden" name="token" vlaue="$_SESSION[token]"/>				<input type="hidden" name="action" value="event_edit" />
@@ -389,14 +389,14 @@ FORM_MARKUP;
 				<label for="event_start">Start Time</lable>
 				<input type="text" name="event_start"
 						id="evetn_start" value=""/>
-				<lable for="event_end">End Time</lable>
-				<input type="text" name="event_end"
+				<label for="event_end">End Time</lable>
+				<input type="text" name="event_end" 
 						id="event_end" value=""/>
 				<lable for="event_description">Event Description</lable>
 				<textarea name="event_descript"></textarea>
 				<input type="hidden" name="event_id" value="" />
 				<input type="hidden" name="token" vlaue="$_SESSION[token]"/>				<input type="hidden" name="action" value="event_edit" />
-				<input type="submit" name="event_submit" value="" />
+				<input type="submit" name="event_submit" value="Create a New Event" />
 			or <a href="./">cancel</a>
 			</fieldset>
 		</from>
