@@ -369,9 +369,9 @@ class Calendar extends DB_Connect{
 				<input type="text" name="event_end"
 						id="event_end" value="$event->end"/>
 				<label for="event_description">Event Description</lable>
-				<textarea name="event_descript">$event->description</textarea>
+				<textarea name="event_description">$event->description</textarea>
 				<input type="hidden" name="event_id" value="$event->id" />
-				<input type="hidden" name="token" vlaue="$_SESSION[token]"/>				<input type="hidden" name="action" value="event_edit" />
+				<input type="hidden" name="token" value="$_SESSION[token]"/>				<input type="hidden" name="action" value="event_edit" />
 				<input type="submit" name="event_submit" value="$submit" />
 			or <a href="./">cancel</a>
 			</fieldset>
@@ -393,9 +393,9 @@ FORM_MARKUP;
 				<input type="text" name="event_end" 
 						id="event_end" value=""/>
 				<lable for="event_description">Event Description</lable>
-				<textarea name="event_descript"></textarea>
+				<textarea name="event_description"></textarea>
 				<input type="hidden" name="event_id" value="" />
-				<input type="hidden" name="token" vlaue="$_SESSION[token]"/>				<input type="hidden" name="action" value="event_edit" />
+				<input type="hidden" name="token" value="$_SESSION[token]"/>				<input type="hidden" name="action" value="event_edit" />
 				<input type="submit" name="event_submit" value="Create a New Event" />
 			or <a href="./">cancel</a>
 			</fieldset>
@@ -403,6 +403,85 @@ FORM_MARKUP;
 FORM_MARKUP;
 		}
 	}
+	
+	/** 
+	 * p144
+	 *验证表单，保存/更新活动信息
+	 *@return 成功返回TRUE ，失败返回出错信息
+	 */
+	public function processForm()
+	{
+			
+		/**
+		 *若action设置不正确，退出
+		 */
+		if($_POST['action']!='event_edit')
+		{
+			return "The method processFrom was accessed incorrectly";
+		}
+
+		/**
+		 *转义表单提交过来的数据
+		 */
+		$title = htmlentities($_POST['event_title'],ENT_QUOTES);
+		$desc =  htmlentities($_POST['event_description'],ENT_QUOTES);
+		$start =  htmlentities($_POST['event_start'],ENT_QUOTES);
+		$end =  htmlentities($_POST['event_end'],ENT_QUOTES);
+
+
+		//var_dump($_POST);
+	    //exit();	
+		/**
+		 *如果提交数据中没有活动ID，就创建一个新的活动
+		 */
+		if(empty($_POST['event_id']))
+		{
+			$sql= "INSERT INTO `events` (`event_title`,`event_desc`,`event_start`,`event_end`) VALUES (:title,:description,:start,:end)";
+		}else{	/**
+		 *否则就更新这个活动
+		 */
+				/**
+				 *为数据库安全，强制转换ID为整数
+				 */
+		
+		$id = (int)$_POST['event_id'];
+		$sql = "UPDATE `events` SET 
+				`event_title` =:title,
+				`event_start` = :start,
+				`event_desc` = :description,
+				`event_end` = :end
+				WHERE `event_id` = :$id";
+		}
+		//echo $sql;
+		//exit;
+		/**
+		 *绑定参数执行查询
+		 */
+		try
+		{
+		echo $sql;
+			$stmt = $this->db->prepare($sql);
+		    $stmt->bindParam(":title",$title,PDO::PARAM_STR);
+			$stmt->bindParam(":description",$desc,PDO::PARAM_STR);
+			$stmt->bindParam(":start",$start,PDO::PARAM_STR);
+			$stmt->bindParam(":end",$end,PDO::PARAM_STR);
+		
+			$stmt->execute();
+			$stmt->closeCursor();
+			//var_dump($this->db->lastInsertId());
+			return TRUE;
+		}
+		catch(Exception $e)
+		{
+
+			return $e->getMessage();
+		}
+	
+		
+
+
+	}
+
 
 	/**
 	 *根据活动ID得到event对象
@@ -443,6 +522,8 @@ FORM_MARKUP;
 	//	return $this->_loadEventById(1);
 	//  return $this->displayEvent(1);
 	//return $this->displayForm();	
+	//return $this->processForm();	
+
 
 	}
 }
