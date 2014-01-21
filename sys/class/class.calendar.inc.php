@@ -269,10 +269,18 @@ class Calendar extends DB_Connect{
 		 *关闭最后一个<ul>标签
 		 */	
 		$html.="\n\t</ul>\n\n";	
+
+		//p148 
+		//
+		/**
+		 *若用户已登录，显示管理选项
+		 */
+		$admin = $this->_adminGeneralOptions();
+
 		/**
 		 *返回用于输出的html标记
 		 */
-		return $html;
+		return $html.$admin;
 	}	
 	
 	/**
@@ -305,12 +313,20 @@ class Calendar extends DB_Connect{
 		$start = date('g:ia',$ts);
 		$end = date('g:ia',strtotime($event->end));
 
+		//p153
+		//
+		/**
+		 *若用户已登录，再入管理选项
+		 *
+		 */
+		$admin = $this->_adminEntryOptions($id);
+
 		/**
 		 *生成并返回HTML标记
 		 */
 		return "<h2>$event->title</h2>".
 				"\n\t<p class=\"dates\">$date,$start&mdash;$end</p>".
-				"\n\t<p>$event->description</p>";
+				"\n\t<p>$event->description</p>$admin";
 	}
 
 
@@ -516,6 +532,52 @@ FORM_MARKUP;
 			}
 	}
 
+	/**
+	 *p148
+	 *生成管理连接的HTML 
+	 */
+	private function _adminGeneralOptions()
+	{
+		/**
+		 *显示管理界面
+		 */
+			return <<<ADMIN_OPTIONS
+
+		<a href="admin.php" class="admin">+Add a New Event</a>
+
+ADMIN_OPTIONS;
+	
+	}
+	/**
+	 *为给定活动id生成修改和删除选项按钮
+	 *@param int $id 活动ID
+	 *@return string 修改删除选项标记
+	 */ 
+
+	private function _adminEntryOptions($id)
+	{
+		return <<<ADMIN_OPTIONS
+<div class="admin-options">
+<form action="admin.php" method="post">
+<p>
+	<input type="submit" name="edit_event"
+					value="Edit This Event" />
+	<input type="hidden" name="event_id" 
+					value="$id" />
+</p>
+</form>
+<form action="confirmdelete.php" method="post">
+<p> 
+	<input type="submit" name="delete_event" 
+						value="Delete This Event" />
+	<input type="hidden" name="event_id" 
+						value="$id" />
+</p>
+</form>
+</div><!-- end .admin-option-->
+ADMIN_OPTIONS;
+	}
+
 	public 	function test(){
 	//	return	$this->_loadEventData();
 	//	return $this->_createEventObj();
@@ -523,18 +585,10 @@ FORM_MARKUP;
 	//  return $this->displayEvent(1);
 	//return $this->displayForm();	
 	//return $this->processForm();	
+    //return $this->  _adminEntryOptions(1);
 
 
 	}
 }
 
 ?>
-
-
-
-
-
-
-
-
-

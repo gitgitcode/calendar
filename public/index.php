@@ -14,7 +14,7 @@ $cal = new Calendar($dbo,"2014-01-01 00:00:00");
  * 初始化标题和样式文件
  */
 $page_title = "Events Calendar";
-$css_files = array('style.css');
+$css_files = array('style.css','admin.css');
 
 /**
  *包含页头
