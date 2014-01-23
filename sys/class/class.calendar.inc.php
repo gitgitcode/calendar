@@ -450,6 +450,8 @@ FORM_MARKUP;
 		/**
 		 *如果提交数据中没有活动ID，就创建一个新的活动
 		 */
+		//var_dump($_POST['event_id']);
+		
 		if(empty($_POST['event_id']))
 		{
 			$sql= "INSERT INTO `events` (`event_title`,`event_desc`,`event_start`,`event_end`) VALUES (:title,:description,:start,:end)";
@@ -466,7 +468,7 @@ FORM_MARKUP;
 				`event_start` = :start,
 				`event_desc` = :description,
 				`event_end` = :end
-				WHERE `event_id` = :$id";
+				WHERE `event_id` = $id";
 		}
 		//echo $sql;
 		//exit;
@@ -475,7 +477,7 @@ FORM_MARKUP;
 		 */
 		try
 		{
-		echo $sql;
+		//echo $sql;
 			$stmt = $this->db->prepare($sql);
 		    $stmt->bindParam(":title",$title,PDO::PARAM_STR);
 			$stmt->bindParam(":description",$desc,PDO::PARAM_STR);
@@ -495,6 +497,98 @@ FORM_MARKUP;
 	
 		
 
+
+	}
+		
+	/**
+	 * p157
+	 * 确认一个活动是否该被删除并执行
+	 *
+	 * 在单击删除按钮删除活动时，会生成一个确认的窗口，如果
+	 * 用户删除，则从数据库中删除次活动并将用户送回主页
+	 * 如果不删除则不操作返回主页
+	 *
+	 * @param int $id 活动ID
+	 * @return 若确认删除可能返回null或异常信息，则返回null
+	 */
+
+	public function confirmDelete($id)
+	{
+//			var_dump($_POST['confirm_delete']);
+	
+//	var_dump($id);		//exit;
+//exit;
+			/**
+			 *检查是否传入了ID参数
+			 */
+			if(empty($id)){return NULL;}
+
+			/**
+			 *确保这个ID是整数
+			 */
+			$id= preg_replace('/[^0-9]/','',$id);
+
+			/**
+			 *若确认表单且提交有一个正确的记号，检查表单提交数据
+			 */
+
+			if(isset($_POST['confirm_delete']) 
+					&& $_POST['token']==$_SESSION['token'])
+			{
+					/**
+					 *若用户确认删除，则从数据库中删除次活动
+					 */
+
+				
+					if($_POST['confirm_delete']=='Yes,Delete It')
+					{
+							$sql="DELETE FROM `events`
+								WHERE `event_id`=:id LIMIT 1";
+						
+							try
+							{
+								$stmt =$this->db->prepare($sql);
+								$stmt->bindParam(":id",$id,PDO::PARAM_INT);
+								$stmt->execute();
+								header("Location: ./");
+								return;
+							}catch(Exception $e){
+								return $e->getMessage();	
+							}
+					}else{//若为确认删除则将用户带往主页
+							header("Location:./");
+							return;
+					}
+			}
+
+			/**
+			 *若确认表单尚未提交，显示它
+			 */
+			$event = $this->_loadEventById($id);
+			/**
+			 *若得到的$event并非对象，则将用户带往主页
+			 */
+			if(!is_object($event)){header("Location:./");}
+					return <<<CONFIRM_DELETE
+	<form action="confirmdelete.php" method="post">
+		<h2>
+			Are you sure you want to delete "$event->title"?
+		</h2>
+		<p>
+			There is <strong>no undo</strong>if you continue.
+		</p>
+		<p>
+			<input type="submit" name="confirm_delete"
+						value="Yes,Delete It" />
+			<input type="submit" name="confirm_delete"
+						value="Nope! Just Kidding!" />
+			<input type="hidden" name="event_id"
+						value="$event->id" />
+			<input type="hidden" name="token"
+						value="$_SESSION[token]" />
+		</p>
+	</form>
+CONFIRM_DELETE;
 
 	}
 
