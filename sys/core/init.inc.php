@@ -1,4 +1,12 @@
 <?php
+/*
+create table if not exists `php-jquery_example`.`users`(
+	`user_id` int(11) not null auto_increment, 
+	`user_name` varchar(80) default null,
+	`user_pass` varchar(47) default null,
+	`user_email` varchar(80) default null,
+	primary key (`user_id`), unique(`user_name`) ) engine=MyISAM CHARACTER SET utf8 COLLATE utf8_unicode_ci; p162
+*/
 /**
  * p138
  *启动session
